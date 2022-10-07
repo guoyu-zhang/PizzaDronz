@@ -5,6 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 public class Restaurant {
@@ -29,12 +32,25 @@ public class Restaurant {
         return menu;
     }
 
-    public static Restaurant[] getRestaurantsFromRestServer (URL serverBaseAddress){
+    public static Restaurant[] getRestaurantsFromRestServer (URL serverBaseAddress) {
+        URL newUrl = null;
+        try {
+        URI uri = serverBaseAddress.toURI();
+        String newPath = uri.getPath() + "/restaurants";
+        newUrl = uri.resolve(newPath).toURL();}
+        catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
         try {
             ObjectMapper mapper = new ObjectMapper();
-            Restaurant[] restaurants = mapper.readValue(serverBaseAddress, new TypeReference<>() {});
+            Restaurant[] restaurants = mapper.readValue(newUrl, new TypeReference<>() {});
             return restaurants;
 
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

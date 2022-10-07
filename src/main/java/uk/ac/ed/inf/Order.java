@@ -1,30 +1,31 @@
 package uk.ac.ed.inf;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Order {
 
     public int getDeliveryCost(Restaurant[] restaurants, String... pizzas){
-        int price = 1;
+        int totalCost = 100;
 
-//         Max of 4 pizzas, min of one
+//         TODO add validation for Max of 4 pizzas, min of one
 
-//        Filter to get the menu that contains first pizza
-//        then loop through to calculate price, if a pizza is not there then
-//        throw exception.
+//        TODO throw invalidPizzaCombinationException
+        Restaurant restaurant = Arrays.stream(restaurants)
+                .filter(menu -> Arrays.stream(menu.getMenu())
+                        .anyMatch(item -> item.getName().equals(pizzas[0])))
+                .findFirst()
+                .orElse(null);  // gives null if no restaurant had the pizza, so TODO add some following validation steps
+
+        Menu[] menuItems = restaurant.getMenu();
         for (String pizza : pizzas) {
-            for (Restaurant restaurant : restaurants) {
-                Menu[] menus = restaurant.getMenu();
-                for(Menu menuItem : menus) {
-                    if (menuItem.getName().equals(pizza)) {
-                        price+=menuItem.getPriceInPence();
-                    }
-                }
-            }
+            int itemPrice = Arrays.stream(menuItems)
+                    .filter( item -> item.getName().equals(pizza))
+                    .findFirst()
+                    .orElse(null)
+                    .getPriceInPence();
+            totalCost += itemPrice;
         }
 
-
-        return price;
+        return totalCost;
     }
 }
