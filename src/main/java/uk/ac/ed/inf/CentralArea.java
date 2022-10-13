@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class Location {
 
-    public static ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
+    public static ArrayList<Point> points = new ArrayList<>();
     private static Location INSTANCE;
 
     private Location() {
@@ -25,12 +25,11 @@ public class Location {
     }
 
     public void fetchData() {
-        System.out.println("i keep on running");
         try {
             String baseUrl = "https://ilp-rest.azurewebsites.net/centralArea";
             ObjectMapper mapper = new ObjectMapper();
 
-            coordinates = mapper.readValue(new URL(baseUrl), new TypeReference<>() {
+            points = mapper.readValue(new URL(baseUrl), new TypeReference<>() {
             });
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -39,7 +38,7 @@ public class Location {
         }
     }
 
-    public static ArrayList<Coordinate> getData() {
-        return coordinates;
+    public static ArrayList<Point> getData() {
+        return points;
     }
 }
