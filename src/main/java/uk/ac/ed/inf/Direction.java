@@ -1,15 +1,27 @@
 package uk.ac.ed.inf;
 
+/**
+ * Directions that can be used.
+ * Each direction has a corresponding angle.
+ * @author s1808795
+ * @version 1.0
+ */
 public enum Direction {
+    /** Tertiary inter-cardinal directions along with their corresponding angles. */
     E(0.0), ENE(22.5), NE(45.0), NNE(67.5),
     N(90.0), NNW(112.5), NW(135.0), WNW(157.5),
     W(180.0), WSW(202.5), SW(225.0), SSW(247.5),
-    S(270.0), SSE(292.5), SE(315.0), ESE(337.5),
-    HOVER(null);
+    S(270.0), SSE(292.5), SE(315.0), ESE(337.5);
 
-    public final Double angle;
+    /** The angle associated with the specific direction. */
+    public final double angle;
 
-    Direction(Double angle) {
+    /**
+     * Class constructor which allows a value for angle to be
+     * associated with a particular direction.
+     * @param angle double of angle associated with a specific direction.
+     */
+    Direction(double angle) {
         this.angle = angle;
     }
 

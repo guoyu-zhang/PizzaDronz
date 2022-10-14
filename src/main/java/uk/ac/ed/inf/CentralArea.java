@@ -3,42 +3,61 @@ package uk.ac.ed.inf;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.io.IOException;
+
 import java.util.ArrayList;
 
-public class Location {
+/**
+ * Class to represent central area boundaries.
+ * Implemented with singleton access pattern.
+ * @author s1808795
+ * @version 1.0
+ */
+public class CentralArea {
 
-    public static ArrayList<Point> points = new ArrayList<>();
-    private static Location INSTANCE;
+    private static ArrayList<Location> locations = new ArrayList<>();
+    private static CentralArea INSTANCE;
 
-    private Location() {
+    private CentralArea() {
     }
 
-    public static Location getInstance() {
+    /**
+     * An instance of CentralArea is created if it does not already exist.
+     * Data is fetched and stored in the instance of CentralArea. The
+     * instance is then returned.
+     * @return This returns the single instance of the class CentralArea.
+     */
+    public static CentralArea getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new Location();
+            INSTANCE = new CentralArea();
             INSTANCE.fetchData();
         }
         return INSTANCE;
     }
 
+    /**
+     * Fetches and stores data for locations, which form the boundary of the
+     * central area, from the endpoint (which currently has a default value).
+     * @exception IOException if data unable to be read from endpoint.
+     */
     public void fetchData() {
+        String url = "https://ilp-rest.azurewebsites.net/centralArea";
+        ObjectMapper mapper = new ObjectMapper();
         try {
-            String baseUrl = "https://ilp-rest.azurewebsites.net/centralArea";
-            ObjectMapper mapper = new ObjectMapper();
-
-            points = mapper.readValue(new URL(baseUrl), new TypeReference<>() {
+            locations = mapper.readValue(new URL(url), new TypeReference<>() {
             });
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static ArrayList<Point> getData() {
-        return points;
+    /**
+     * Returns list of Locations forming the boundary of the central area.
+     * @return ArrayList of Location, locations.
+     */
+    public static ArrayList<Location> getData() {
+        return locations;
     }
 }
