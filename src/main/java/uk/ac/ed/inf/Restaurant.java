@@ -1,18 +1,14 @@
 package uk.ac.ed.inf;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.net.URI;
-import java.net.URL;
-import java.net.URISyntaxException;
-import java.net.MalformedURLException;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Class representing a restaurant, with method to fetch restaurant data.
- *
  * @author s1808795
  * @version 1.0
  */
@@ -28,68 +24,104 @@ public class Restaurant {
     private double lat;
 
     @JsonProperty("menu")
-    private Menu[] menu;
+    private MenuItem[] menuItems;
+
+    private LngLat lngLat;
+
+    private ArrayList<LngLat> flightPath;
 
     /**
-     * Fetches and returns restaurants data from REST server.
-     *
-     * @param serverBaseAddress URL representing base address of REST server.
-     * @return Restaurant array representing data for all restaurants obtained from REST server.
+     * Matches orders with their corresponding restaurants.
+     * @param orders List of all orders.
+     * @param restaurants List of all restaurants.
      */
-    public static Restaurant[] getRestaurantsFromRestServer(URL serverBaseAddress) {
-        URL newUrl = null;
-        URI uri = null;
-        ObjectMapper mapper = new ObjectMapper();
-        Restaurant[] restaurants = new Restaurant[0];
-
-        try {
-            uri = serverBaseAddress.toURI();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
+    public static void matchRestaurantsAndOrders(Order[] orders, Restaurant[] restaurants){
+        for (Order order : orders) {
+            order.searchCorrespondingRestaurant(restaurants);
         }
-
-        String newPath = uri.getPath() + "/restaurants";
-        try {
-            newUrl = uri.resolve(newPath).toURL();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            restaurants = mapper.readValue(newUrl, new TypeReference<>() {
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return restaurants;
     }
 
     /**
-     * @return String representing name of restaurant.
+     * Given orders and restaurants, finds only restaurants that have at least one order placed there.
+     * @param orders List of all orders.
+     * @param restaurants List of all restaurants.
+     * @return List of restaurants that have at least one order placed there.
+     */
+    public static ArrayList<Restaurant> getOnlyRestaurantsWithOrders(Order[] orders, Restaurant[] restaurants) {
+        Set<String> restaurantsNamesWithOrders = Arrays.stream(orders).map(o -> o.getOrderRestaurant().getName()).collect(Collectors.toSet());
+        ArrayList<Restaurant> restaurantsWithOrders = new ArrayList<>();
+
+        for (Restaurant restaurant : restaurants) {
+            if (restaurantsNamesWithOrders.contains(restaurant.getName())) {
+                restaurantsWithOrders.add(restaurant);
+            }
+        }
+
+        return restaurantsWithOrders;
+    }
+
+    /**
+     * Ser LngLat of restaurant.
+     */
+    public void setLngLat() {
+        this.lngLat = new LngLat(lng, lat);
+    }
+
+    /**
+     * @param path Flight path for restaurant (origin from specifications to and from restaurant).
+     */
+    public void setFlightPath(ArrayList<LngLat> path) {
+        flightPath = path;
+    }
+
+    /**
+     * @param restaurants Restaurants for LngLats to be assigned to.
+     */
+    public static void setRestaurantCoords(Restaurant[] restaurants) {
+        for (Restaurant restaurant : restaurants) {
+            restaurant.setLngLat();
+        }
+    }
+
+    /**
+     * @return LngLat of restaurant.
+     */
+    public LngLat getLngLat() {
+        return this.lngLat;
+    }
+
+    /**
+     * @return Flight path for restaurant (origin from specifications to and from restaurant).
+     */
+    public ArrayList<LngLat> getFlightPath() {
+        return flightPath;
+    }
+
+    /**
+     * @return Name of restaurant.
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @return double representing longitude of restaurant.
+     * @return Longitude of restaurant.
      */
     public double getLng() {
         return lng;
     }
 
     /**
-     * @return double representing longitude of restaurant.
+     * @return Latitude of restaurant.
      */
     public double getLat() {
         return lat;
     }
 
     /**
-     * @return Menu array representing menu items of restaurant.
+     * @return Menu items of restaurant.
      */
-    public Menu[] getMenu() {
-        return menu;
+    public MenuItem[] getMenuItems() {
+        return menuItems;
     }
 }
