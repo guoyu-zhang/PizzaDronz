@@ -1,2 +1,4 @@
 # PizzaDronz
-ILP PizzaDronz Coursework
+
+
+Please see [project-report](ilp-report.pdf) for more details.
